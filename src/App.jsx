@@ -18,15 +18,15 @@ const issues = [{
             completionDate: new Date('2017-07-20'),
             title: "Missing bottom border on panel",
         },
-    {
-        id: 3,
-        status: 'Open',
-        owner: "Pepe",
-        created: new Date('2017-06-24'),
-        effort: 4,
-        completionDate: new Date('2017-06-28'),
-        title: "Whatever",
-    }
+        {
+            id: 3,
+            status: 'Open',
+            owner: "Pepe",
+            created: new Date('2017-06-24'),
+            effort: 4,
+            completionDate: new Date('2017-06-28'),
+            title: "Whatever",
+        }
     ]
 ;
 
@@ -88,6 +88,25 @@ class IssueRow extends React.Component {
 }
 
 class IssueList extends React.Component {
+    constructor() {
+        super();
+        this.state = {issues: issues};
+        setTimeout(this.createTestIssue.bind(this), 2000);
+    }
+
+    createIssue(newIssue) {
+        const newIssues = this.state.issues.slice();
+        newIssue.id = this.state.issues.length + 1;
+        newIssues.push(newIssue);
+        this.setState({issues: newIssues});
+    }
+
+    createTestIssue() {
+        this.createIssue({
+            status: 'New', owner: 'Michael', created: new Date(), title: 'Completion date should be optional',
+        });
+    }
+
     render() {
         return (
             <div>
@@ -95,7 +114,7 @@ class IssueList extends React.Component {
                 <hr/>
                 <IssueFilter />
                 <hr/>
-                <IssueTable issues={issues}/>
+                <IssueTable issues={this.state.issues}/>
                 <hr/>
                 <IssueAdd />
             </div>
