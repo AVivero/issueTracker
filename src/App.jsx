@@ -30,68 +30,12 @@ const issues = [{
     ]
 ;
 
-class IssueFilter extends React.Component {
-    render() {
-        return (
-            <div>This is a placeholder for the Issue filter</div>
-        );
-    }
-}
-
-class IssueTable extends React.Component {
-    render() {
-        const issueRows = this.props.issues.map(issue => <IssueRow key={issue.id} issue={issue}/>);
-        return (
-            <table>
-                <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Status</th>
-                    <th>Owner</th>
-                    <th>Created</th>
-                    <th>Effort</th>
-                    <th>Completion Date</th>
-                    <th>Title</th>
-                </tr>
-                </thead>
-                <tbody>
-                {issueRows}
-                </tbody>
-            </table>
-        );
-    }
-}
-
-class IssueAdd extends React.Component {
-    render() {
-        return (
-            <div>This is a placehodler for an Issue add entry form</div>
-        );
-    }
-}
-
-class IssueRow extends React.Component {
-    render() {
-        const issue = this.props.issue;
-        return (
-            <tr>
-                <td>{issue.id}</td>
-                <td>{issue.status}</td>
-                <td>{issue.owner}</td>
-                <td>{issue.created.toLocaleDateString()}</td>
-                <td>{issue.effort}</td>
-                <td>{issue.completionDate ? issue.completionDate.toDateString() : ''}</td>
-                <td>{issue.title}</td>
-            </tr>
-        );
-    }
-}
 
 class IssueList extends React.Component {
     constructor() {
         super();
         this.state = {issues: []};
-        setTimeout(this.createTestIssue.bind(this), 2000);
+        this.createIssue = this.createIssue.bind(this);
     }
 
     componentDidMount() {
@@ -111,25 +55,99 @@ class IssueList extends React.Component {
         this.setState({issues: newIssues});
     }
 
-    createTestIssue() {
-        this.createIssue({
-            status: 'New', owner: 'Michael', created: new Date(), title: 'Completion date should be optional',
-        });
-    }
 
     render() {
         return (
             <div>
                 <h1>Issue Tracker</h1>
                 <hr/>
-                <IssueFilter />
+                <IssueFilter/>
                 <hr/>
                 <IssueTable issues={this.state.issues}/>
                 <hr/>
-                <IssueAdd />
+                <IssueAdd createIssue={this.createIssue}/>
             </div>
         );
     }
 }
 
-ReactDOM.render(<IssueList />, contentNode);
+
+class IssueFilter extends React.Component {
+    render() {
+        return (
+            <div>This is a placeholder for the Issue filter</div>
+        );
+    }
+}
+
+
+function IssueTable() {
+    const issueRows = this.props.issues.map(issue => <IssueRow key={issue.id} issue={issue}/>);
+    return (
+        <table>
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Status</th>
+                <th>Owner</th>
+                <th>Created</th>
+                <th>Effort</th>
+                <th>Completion Date</th>
+                <th>Title</th>
+            </tr>
+            </thead>
+            <tbody>
+            {issueRows}
+            </tbody>
+        </table>
+    );
+}
+
+
+const IssueRow = (props) => (
+    <tr>
+        <td>{issue.id}</td>
+        <td>{issue.status}</td>
+        <td>{issue.owner}</td>
+        <td>{issue.created.toLocaleDateString()}</td>
+        <td>{issue.effort}</td>
+        <td>{issue.completionDate ? issue.completionDate.toDateString() : ''}</td>
+        <td>{issue.title}</td>
+    </tr>
+)
+
+class IssueAdd extends React.Component {
+    constructor() {
+        super();
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+        let form = document.forms.issueAdd;
+        this.props.createIssue({
+            owner: form.owner.value,
+            title: form.title.value,
+            status: 'New',
+            created: new Date(),
+        })
+        //clear the form for the next input
+        form.owner.value = "";
+        form.title.value = "";
+    }
+
+    render() {
+        return (
+            <div>
+                <form name="issueAdd" onSubmit={this.handleSubmit}>
+                    <input type="text" name="owner" placeholder="Owner"/>
+                    <input type="text" name="title" placeholder="Title"/>
+                    <button>Add</button>
+                </form>
+            </div>
+        );
+    }
+}
+
+
+ReactDOM.render(<IssueList/>, contentNode);
